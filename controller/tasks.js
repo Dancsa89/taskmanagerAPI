@@ -39,6 +39,8 @@ tasks.post('/', (req, res) => {
   });
 });
 
+// Put
+
 tasks.put('/:id', (req, res) => {
   models.Task.findById(req.params.id).then(task => {
     if (!task) {
@@ -56,6 +58,8 @@ tasks.put('/:id', (req, res) => {
     }
   });
 });
+
+// Delete
 
 tasks.delete('/:id', (req, res) => {
   models.Task.destroy({ where: { id: req.params.id } }).then(result => {

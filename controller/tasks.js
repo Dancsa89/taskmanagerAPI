@@ -25,15 +25,15 @@ tasks.get('/:id', (req, res) => {
 // Post
 
 tasks.post('/', (req, res) => {
-  models.Task.findOne({ where: { name: req.body.name } }).then(result => {
-    if (result) {
+  models.Task.findOne({ where: { name: req.body.name } }).then(preResult => {
+    if (preResult) {
       res.status(400).send('Már van ilyen rekord!');
     } else {
       models.Task.create({
         name: req.body.name,
         message: req.body.message
       }).then(result => {
-        res.redirect('tasks');
+        res.json(result);
       });
     }
   });
@@ -51,7 +51,7 @@ tasks.put('/:id', (req, res) => {
       {
         where: { id: req.params.id }
       }).then(result => {
-        res.redirect(`/tasks/${req.params.id}`);
+        res.json(result);
       });
     }
   });
@@ -60,7 +60,7 @@ tasks.put('/:id', (req, res) => {
 tasks.delete('/:id', (req, res) => {
   models.Task.destroy({ where: { id: req.params.id } }).then(result => {
     if (!result) {
-      res.status(400).send('Nincs ilyen rekord!')
+      res.status(400).send('Nincs ilyen rekord!');
     } else {
       res.json(result);
     }

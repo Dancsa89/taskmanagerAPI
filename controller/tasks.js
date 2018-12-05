@@ -25,29 +25,45 @@ tasks.get('/:id', (req, res) => {
 // Post
 
 tasks.post('/', (req, res) => {
-  models.Task.create({
-    name: req.body.name,
-    message: req.body.message
-  }).then(result => {
-    res.redirect('tasks');
+  models.Task.findOne({ where: { name: req.body.name } }).then(result => {
+    if (result) {
+      res.status(400).send('Már van ilyen rekord!');
+    } else {
+      models.Task.create({
+        name: req.body.name,
+        message: req.body.message
+      }).then(result => {
+        res.redirect('tasks');
+      });
+    }
   });
 });
 
 tasks.put('/:id', (req, res) => {
-  models.Task.update({
-    name: req.body.name,
-    message: req.body.message
-  },
-  {
-    where: { id: req.params.id }
-  }).then(result => {
-    res.redirect(`/tasks/${req.params.id}`);
+  models.Task.findById(req.params.id).then(task => {
+    if (!task) {
+      res.status(400).send('Nincs ilyen rekord!');
+    } else {
+      models.Task.update({
+        name: req.body.name,
+        message: req.body.message
+      },
+      {
+        where: { id: req.params.id }
+      }).then(result => {
+        res.redirect(`/tasks/${req.params.id}`);
+      });
+    }
   });
 });
 
 tasks.delete('/:id', (req, res) => {
-  models.Task.destroy({ where: { id: req.params.id } }).then(task => {
-    res.redirect(task);
+  models.Task.destroy({ where: { id: req.params.id } }).then(result => {
+    if (!result) {
+      res.status(400).send('Nincs ilyen rekord!')
+    } else {
+      res.json(result);
+    }
   });
 });
 
